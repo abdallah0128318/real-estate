@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
+  const [usernameError, setUsernameError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   // a function to pick data up from form fields then assign it in 'formData' object
@@ -27,15 +29,19 @@ export default function SignUp() {
       body: JSON.stringify(formData)
     })
     if(res.status == 201){
+      const msg = await res.json();
+      console.log(msg);
       setIsLoading(false)
-      setError(null)
       navigate('/sign-in')
     }
     else if(res.status == 401){
-      const msg = await res.json();
-      setError(msg);
+      const errorObj = await res.json();
+      console.log(errorObj);
       setIsLoading(false)
-         return 0;
+      setUsernameError(errorObj.username)
+      setEmailError(errorObj.email)
+      setPasswordError(errorObj.password)
+      return 0;
     }
   }
 
@@ -43,17 +49,20 @@ export default function SignUp() {
   return (
     <div>
       <h1 className="text-center my-7 font-semibold text-2xl ">Sign Up</h1>
-      <p className='text-red-600 text-center' >{ error? error : ""}</p>
+
       <form className='w-3/4 sm:w-1/2  md:w-1/3 mt-8 mb-3 mx-auto' onSubmit={handleSubmit}>
 
           <input className='block w-full p-2 my-3 rounded-lg focus:outline-none' 
           type="text" name="username" id="username" placeholder='username' onChange={handleChange}/>
+          {usernameError && (  <p className='text-center text-red-500'> {usernameError} </p> )}
 
           <input className='block w-full p-2 my-3 rounded-lg focus:outline-none' 
           type="text" name="email" id="email" placeholder='email' onChange={handleChange}/>
+          {emailError && (  <p className='text-center text-red-500'> {emailError} </p> )}
 
           <input className='block w-full p-2 my-3 rounded-lg focus:outline-none' 
           type="password" name="password" id="password" placeholder='password' onChange={handleChange}/>
+          {passwordError && (  <p className='text-center text-red-500'> {passwordError} </p> )}
 
           <button className='block w-full p-2 my-3 hover:opacity-70 disabled:opacity-70 
           rounded-lg bg-indigo-950 text-white' disabled={isLoading} > {isLoading ? 'Loading' : 'SIGN UP'} </button>
