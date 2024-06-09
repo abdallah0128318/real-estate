@@ -1,10 +1,9 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-const cors = require('cors')
-const User = require('./models/user.model')
-const userRouter = require('./routes/user.route')
-const authRouter = require('./routes/auth.route')
+import express from 'express';
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+import cors from 'cors'
+// import userRouter from './routes/user.route.js'
+import authRouter from './routes/auth.route.js'
 // create an express app
 const app = express()
 // use cors to allow 'cross origin request sharing'
@@ -25,7 +24,7 @@ mongoose.connect(process.env.MONGO_CONN_STR, {dbName: "real-estate1"}).then(data
 // cycle and each function can end the request-respopnse cycle"
 
 app.use('/api/auth', authRouter)
-app.use('/api/users', userRouter)
+// app.use('/api/users', userRouter)
 
 
 

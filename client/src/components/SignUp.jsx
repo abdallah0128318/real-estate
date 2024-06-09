@@ -36,7 +36,6 @@ export default function SignUp() {
     }
     else if(res.status == 401){
       const errorObj = await res.json();
-      console.log(errorObj);
       setIsLoading(false)
       setUsernameError(errorObj.username)
       setEmailError(errorObj.email)
@@ -70,7 +69,7 @@ export default function SignUp() {
 
       <p className='w-3/4 sm:w-1/2  md:w-1/3 mt-3 mx-auto' >Have an account?
         <Link to="/sign-in">
-          <span className="text-blue-700"> Sign in</span> 
+          <span className="text-blue-700"> Login</span> 
         </Link>
         </p>
         
