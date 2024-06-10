@@ -37,31 +37,14 @@ export const signup = async (req, res)=>{
 
 
 
-// signin validation rules
-export const signaInValidationRules = [
-  body('email')
-  .isEmail()
-  .normalizeEmail({
-    all_lowercase: false,
-    gmail_remove_dots: false,
-    gmail_remove_subaddress: false,})
-  .withMessage('Enter a valid email address'),
-  body('password').trim().isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-  ];
-
 
 // signin function
 export const signin = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const errorObject = errors.array().reduce((acc, error) => {
-        acc[error.path] = error.msg;
-        return acc;
-      }, {});
-      return res.status(401).json(errorObject);
-    }
-
     const {email, password } = req.body;
+    if(!email || !password )
+    {
+      return res.status(401).json({'msg': 'All fields are required'})
+    }
     const user = await User.findOne({ email });
     if(!user){
       return res.status(401).json({"msg": "Invalid credentials"});
