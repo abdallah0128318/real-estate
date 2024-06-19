@@ -47,7 +47,7 @@ export const signin = async (req, res) => {
     }
     const user = await User.findOne({ email });
     if(!user){
-      return res.status(401).json({"msg": "Invalid credentials"});
+      return res.status(401).json({"msg": "Email Not Found"});
     }
     const isMatch = bcryptjs.compareSync(password, user.password);
     if(!isMatch)

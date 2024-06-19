@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import {useSelector, useDispatch } from  'react-redux' 
+import { signinFail, signIn, signinSuccess } from '../state_slices/userSlice';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const isLoading = useSelector(state => state.user.isLoading);
+  const errorMsg = useSelector(state => state.user.errorMsg);
+  const dispatch = useDispatch();
+  // const [errorMsg, setErrorMsg] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   // a function to pick data up from form fields then assign it in 'formData' object
   const handleChange = (e)=>{
@@ -13,11 +18,10 @@ export default function SignIn() {
       [e.target.id]: e.target.value
     })
   }
-
   // a function to handle form submission
   const handleSubmit = async (e)=>{
     e.preventDefault()
-    setIsLoading(true)
+    dispatch(signIn())
     const res = await fetch('/api/auth/signin', {
       method: 'POST',
       headers: {
@@ -27,13 +31,12 @@ export default function SignIn() {
     })
     if(res.status == 200){
       const data = await res.json();
-      setIsLoading(false)
+      dispatch(signinSuccess(data))
       navigate('/')
     }
     else if(res.status == 401){
-      const errorObj = await res.json();
-      setIsLoading(false)
-      setErrorMsg(errorObj.msg)
+      const errorObj = await res.json();  
+      dispatch(signinFail(errorObj.msg))
       return 0;
     }
   }
