@@ -3,7 +3,7 @@ import User from '../models/user.model.js'
 import bcryptjs  from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 
-// signup validation rules
+// Here is an array to store signup validation rules
 export const signUpValidationRules = [
   body('username').trim().isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters'),
   body('email')
@@ -18,8 +18,8 @@ export const signUpValidationRules = [
   ];
 
 
+// ---------------------------------------------------------------
 // here is the signup function
-
 export const signup = async (req, res)=>{
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -37,7 +37,7 @@ export const signup = async (req, res)=>{
 
 
 
-
+// --------------------------------------------------------------------
 // signin function
 export const signin = async (req, res) => {
     const {email, password } = req.body;
