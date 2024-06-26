@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {useSelector, useDispatch } from  'react-redux' 
 import { signinFail, signIn, signinSuccess } from '../state_slices/userSlice';
+import OAuth from './OAuth';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -58,6 +59,7 @@ export default function SignIn() {
 
           <button className='block w-full p-2 my-3 hover:opacity-70 disabled:opacity-70
           rounded-lg bg-indigo-950 text-white' disabled={isLoading} > {isLoading ? 'Loading' : 'Login'} </button>
+          <OAuth/>
       </form>
 
       <p className='w-3/4 sm:w-1/2  md:w-1/3 mt-3 mx-auto' >Have an account?

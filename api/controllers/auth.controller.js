@@ -5,7 +5,9 @@ import { body, validationResult } from 'express-validator';
 
 // Here is an array to store signup validation rules
 export const signUpValidationRules = [
-  body('username').trim().isLength({ min: 3, max: 30 }).withMessage('Username must be between 3 and 30 characters'),
+  body('username')
+  .trim()
+  .matches(/^[a-z0-9]{3,30}$/).withMessage('Username must be between 3 and 30 small letters and numbers, without spaces'),
   body('email')
   .isEmail()
   .normalizeEmail({
@@ -58,4 +60,55 @@ export const signin = async (req, res) => {
     const {password: pass, ...rest} = user._doc
     res.cookie('access_token', token, {httpOnly: true}).status(200).json(rest);
 }
+
+// EndPoint Api for google oauth signin
+
+export const google = async (req, res) => {
+  const {name, email, photo} = req.body;
+  const user = await User.findOne({ email });
+  if(!user){
+    const username = name.replace(' ', '').toLowerCase() + Math.random().toString(36).slice(-4);
+    const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+    const hashedPassword = bcryptjs.hashSync(generatedPassword);
+    const newUser = new User({ username, email, password:hashedPassword, photo})
+    await newUser.save()
+    const {password, ...rest} = newUser._doc
+    const token = jwt.sign({id: newUser._id}, process.env.JWT_KEY)
+    res.cookie('access_token', token, {httpOnly: true}).status(200).json(rest)
+  }
+  else{
+    const {password, ...rest} = user._doc
+    const token = jwt.sign({id: user._id}, process.env.JWT_KEY)
+    res.cookie('access_token', token, {httpOnly: true}).status(200).json(rest)
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
