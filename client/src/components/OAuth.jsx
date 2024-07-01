@@ -11,7 +11,9 @@ const OAuth = () => {
   const handleoAuth = async ()=> {
     try {
       const provider = new GoogleAuthProvider()
+      // let`s initialize firebase authentication using 'getAuth()' function 
       const auth = getAuth(app)
+      // Sign-in proccess will be using popup window
       const result = await signInWithPopup(auth, provider)
       // send data to the server-side to be stored into database
       const res = await fetch('/api/auth/google', {
