@@ -10,6 +10,8 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   // a function to pick data up from form fields then assign it in 'formData' object
+  // spread operator is for data persistence so if the username is existing then 
+  // the field of email is change there will be an email key-value without losing the username key-value
   const handleChange = (e)=>{
     setFormData({
       ...formData,
@@ -31,9 +33,8 @@ export default function SignUp() {
     })
     if(res.status == 201){
       const msg = await res.json();
-      console.log(msg);
       setIsLoading(false)
-      navigate('/sign-in')
+      navigate('/login')
     }
     else if(res.status == 401){
       const errorObj = await res.json();
