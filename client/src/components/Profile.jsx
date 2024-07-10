@@ -1,14 +1,63 @@
 import { useSelector } from 'react-redux'
-import { deleteFail, deleteSuccess, signOutFail, signOutSuccess } from '../state_slices/userSlice';
+import { deleteFail, deleteSuccess, signOutFail, signOutSuccess, imageUploadSuccess } from '../state_slices/userSlice';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import {app} from '../firebase'
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 export default function Profile() {
+  const imgRef = useRef(null)
   const dispatch = useDispatch()
+  // errmsg state is  just to handle delete and signOut errors
   const errmsg = useSelector(state => state.user.errorMsg)
   const currentUser = useSelector(state => state.user.userData)
+  const [file, setFile] = useState(null)
+  const [uploadProgress, setuploadProgress] = useState(null)
+  const [uploadError, setuploadError] = useState(null)
+  // This state is just a flag to ensure that the firebase storage validation has been completed 
+  // so I can ensure that the uploadErrot state is exact and real weather it is 'false' or 'true'
+  // because if we check it before the validation completes it will be always false what can always leads to unexpected behavior.
+  const [validationComplete, setValidationComplete] = useState(false)
+  // useEffect hook to handle file upload
+  useEffect(()=>{
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [file])
+
+  // A function to handle file upload when a user changes his profile picture
+  const handleFileUpload = (file)=>{
+    // intitilize a storage
+    const storage = getStorage(app)
+    // make filename unique
+    const filename = new Date().getTime() + file.name
+    const storageRef = ref(storage, `profilePics/${filename}`)
+    const uploadedTask = uploadBytesResumable(storageRef, file)
+
+    uploadedTask.on('state_changed', 
+      (snapshot)=>{
+        // handle progress operation
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes ) * 100
+        setuploadProgress(progress)
+      }, 
+      (error)=>
+      {
+        // handle unsuccessfull uploads
+          setuploadError(`file size exceeds 2 MB`)
+          setValidationComplete(true)
+      }, 
+      ()=>{
+        // handle successfull uploads
+        getDownloadURL(uploadedTask.snapshot.ref).then((downloadURL)=>{
+          dispatch(imageUploadSuccess(downloadURL))
+          setuploadError(null)
+          setValidationComplete(true)
+        })
+      })
+
+  }
 
   // A function to handle user deletion
   const handleDelete = async ()=> {
-    try {
       const res = await fetch(`/api/users/deleteUser/${currentUser._id}`, {
         method: 'DELETE',
       });
@@ -20,14 +69,10 @@ export default function Profile() {
         const data = await res.json()
         dispatch(deleteFail(data))
       }
-    } catch (error) {
-      console.log(error);
-    }
   }
 
   // A function to handle user signOut functionality
   const hanldeSignOut = async() => {
-    try {
       const res = await fetch('/api/auth/signOut');
       if(res.status == 200)
       {
@@ -37,10 +82,8 @@ export default function Profile() {
         const data = await res.json()
         dispatch(dispatch(signOutFail(data)))
       }
-    } catch (error) {
-      console.log(error);
-    }
   }
+
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -49,14 +92,22 @@ export default function Profile() {
     <p className='text-red-700 text-center mt-5'>{errmsg ? errmsg : ''}</p>
 
     <form className='flex flex-col gap-4'>
-      <input
-        type='file'
-      />
+      <input type='file' ref={imgRef}  hidden accept='image/*' onChange={(e)=> setFile(e.target.files[0])} />
       <img
         src={currentUser.photo}
         alt='profile'
+        onClick={()=> imgRef.current.click()}
         className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'
       />
+
+      {uploadError && uploadProgress == 100 && validationComplete ?(
+        <p className='text-red-700 text-center mt-5'> {uploadError} </p>
+      ):uploadProgress > 0 && uploadProgress < 100 ? (
+        <p className='text-center mt-5'>{uploadProgress ? `Uploading: ${Math.round(uploadProgress)} %` : ''}</p>
+      ): !uploadError && uploadProgress == 100 && validationComplete ?(
+        <p className='text-green-700 text-center mt-5'>Image uploaded Succefully</p>
+      ): ''
+      }
 
       <input
         type='text'

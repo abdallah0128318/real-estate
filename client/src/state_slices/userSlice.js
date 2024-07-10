@@ -40,11 +40,14 @@ export const userSlice = createSlice({
     signOutFail: (state, action) =>
     {
       state.errorMsg = action.payload
+    },
+    imageUploadSuccess: (state, action)=>{
+      state.userData.photo = action.payload
     }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { signinFail, signIn, signinSuccess, deleteFail, deleteSuccess, signOutFail, signOutSuccess } = userSlice.actions
+export const { signinFail, signIn, signinSuccess, deleteFail, deleteSuccess, signOutFail, signOutSuccess, imageUploadSuccess } = userSlice.actions
 
 export default userSlice.reducer
