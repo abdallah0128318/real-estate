@@ -43,11 +43,24 @@ export const userSlice = createSlice({
     },
     imageUploadSuccess: (state, action)=>{
       state.userData.photo = action.payload
-    }
+    },
+    beforeUpdate: (state) => {
+      state.isLoading = true
+    },
+    updateSuccess: (state, action) => {
+        state.isLoading = false
+        state.userData = action.payload
+    },
+    updateFail: (state, action) => {
+        state.isLoading = false
+    },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { signinFail, signIn, signinSuccess, deleteFail, deleteSuccess, signOutFail, signOutSuccess, imageUploadSuccess } = userSlice.actions
+export const { 
+            signinFail, signIn, signinSuccess, deleteFail, deleteSuccess, 
+            signOutFail, signOutSuccess, imageUploadSuccess, beforeUpdate, updateFail, updateSuccess 
+            } = userSlice.actions
 
 export default userSlice.reducer

@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
-import { deleteFail, deleteSuccess, signOutFail, signOutSuccess, imageUploadSuccess } from '../state_slices/userSlice';
+import { deleteFail, deleteSuccess, signOutFail, 
+          signOutSuccess, imageUploadSuccess, beforeUpdate, updateFail, updateSuccess } from '../state_slices/userSlice';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {app} from '../firebase'
@@ -10,9 +11,12 @@ export default function Profile() {
   // errmsg state is  just to handle delete and signOut errors
   const errmsg = useSelector(state => state.user.errorMsg)
   const currentUser = useSelector(state => state.user.userData)
+  const isLoading = useSelector(state => state.user.isLoading)
   const [file, setFile] = useState(null)
   const [uploadProgress, setuploadProgress] = useState(null)
   const [uploadError, setuploadError] = useState(null)
+  // Here is a state to manage form data
+  const [formData, setFormData] = useState({})
   // This state is just a flag to ensure that the firebase storage validation has been completed 
   // so I can ensure that the uploadErrot state is exact and real weather it is 'false' or 'true'
   // because if we check it before the validation completes it will be always false what can always leads to unexpected behavior.
@@ -33,22 +37,23 @@ export default function Profile() {
     const storageRef = ref(storage, `profilePics/${filename}`)
     const uploadedTask = uploadBytesResumable(storageRef, file)
 
+    // handle progress operation
     uploadedTask.on('state_changed', 
       (snapshot)=>{
-        // handle progress operation
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes ) * 100
         setuploadProgress(progress)
-      }, 
+      },
+      // handle unsuccessfull uploads
       (error)=>
       {
-        // handle unsuccessfull uploads
           setuploadError(`file size exceeds 2 MB`)
           setValidationComplete(true)
-      }, 
+      },
+      // handle successfull uploads
       ()=>{
-        // handle successfull uploads
         getDownloadURL(uploadedTask.snapshot.ref).then((downloadURL)=>{
           dispatch(imageUploadSuccess(downloadURL))
+          setFormData({...formData, photo: downloadURL})
           setuploadError(null)
           setValidationComplete(true)
         })
@@ -84,6 +89,32 @@ export default function Profile() {
       }
   }
 
+  // Here is a function to handle form fields change
+  const handleChange = (e)=>{
+    setFormData({...formData, [e.target.id]: e.target.value})
+  }
+
+
+
+  // Here is a function to handle form submission
+  const handleSubmit = async (e)=>{
+    e.preventDefault()
+    console.log(formData);
+    dispatch(beforeUpdate())
+    const res = await fetch(`/api/users/update/${currentUser._id}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+    const data = await res.json()
+    dispatch(updateSuccess(data))
+    console.log(data);
+
+  }
+
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -91,7 +122,7 @@ export default function Profile() {
 
     <p className='text-red-700 text-center mt-5'>{errmsg ? errmsg : ''}</p>
 
-    <form className='flex flex-col gap-4'>
+    <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
       <input type='file' ref={imgRef}  hidden accept='image/*' onChange={(e)=> setFile(e.target.files[0])} />
       <img
         src={currentUser.photo}
@@ -114,23 +145,28 @@ export default function Profile() {
         placeholder='username'
         id='username'
         className='border p-3 rounded-lg'
+        defaultValue={currentUser.username}
+        onChange={handleChange}
       />
       <input
         type='email'
         placeholder='email'
         id='email'
         className='border p-3 rounded-lg'
+        defaultValue={currentUser.email}
+        onChange={handleChange}
       />
       <input
         type='password'
         placeholder='password'
         id='password'
         className='border p-3 rounded-lg'
+        onChange={handleChange}
       />
       <button
         className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
       >
-        update
+        {isLoading ? 'Updating...': 'Update'}
       </button>
     </form>
 
