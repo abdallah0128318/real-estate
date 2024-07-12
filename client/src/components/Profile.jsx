@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 import { deleteFail, deleteSuccess, signOutFail, 
-          signOutSuccess, imageUploadSuccess, beforeUpdate, updateFail, updateSuccess } from '../state_slices/userSlice';
+          signOutSuccess, imageUploadSuccess, beforeUpdate, updateFail, updateSuccess} from '../state_slices/userSlice';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {app} from '../firebase'
@@ -8,7 +8,11 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/
 export default function Profile() {
   const imgRef = useRef(null)
   const dispatch = useDispatch()
-  // errmsg state is  just to handle delete and signOut errors
+  // update form fields error states
+  const usernameError = useSelector(state => state.user.usernameError)
+  const emailError = useSelector(state => state.user.emailError)
+  const passwordError = useSelector(state => state.user.passwordError)
+  // errmsg state is just to handle delete and signOut errors
   const errmsg = useSelector(state => state.user.errorMsg)
   const currentUser = useSelector(state => state.user.userData)
   const isLoading = useSelector(state => state.user.isLoading)
@@ -109,10 +113,17 @@ export default function Profile() {
       },
       body: JSON.stringify(formData)
     })
-    const data = await res.json()
-    dispatch(updateSuccess(data))
-    console.log(data);
-
+    if(res.status == 201){
+      const data = await res.json()
+      dispatch(updateSuccess(data))
+      console.log(data);
+    }
+    else if(res.status == 401)
+    {
+      const data = await res.json()
+      dispatch(updateFail(data))
+      console.log(data);
+    }
   }
 
 
@@ -120,7 +131,7 @@ export default function Profile() {
     <div className='p-3 max-w-lg mx-auto'>
     <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
 
-    <p className='text-red-700 text-center mt-5'>{errmsg ? errmsg : ''}</p>
+    {errmsg ? (<p className='text-red-700 text-center mt-5'> {errmsg} </p>): ''}
 
     <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
       <input type='file' ref={imgRef}  hidden accept='image/*' onChange={(e)=> setFile(e.target.files[0])} />
@@ -148,14 +159,19 @@ export default function Profile() {
         defaultValue={currentUser.username}
         onChange={handleChange}
       />
+      {usernameError ? (<p className='text-red-700 text-center'> {usernameError} </p>): ''}
+
       <input
-        type='email'
+        type='text'
         placeholder='email'
         id='email'
         className='border p-3 rounded-lg'
         defaultValue={currentUser.email}
         onChange={handleChange}
       />
+      {emailError ? (<p className='text-red-700 text-center'> {emailError} </p>): ''}
+
+
       <input
         type='password'
         placeholder='password'
@@ -163,7 +179,11 @@ export default function Profile() {
         className='border p-3 rounded-lg'
         onChange={handleChange}
       />
+      {passwordError ? (<p className='text-red-700 text-center'> {passwordError} </p>): ''}
+
+
       <button
+        disabled={isLoading}
         className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'
       >
         {isLoading ? 'Updating...': 'Update'}

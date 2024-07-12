@@ -3,7 +3,10 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     errorMsg: null,
     isLoading: false,
-    userData: null
+    userData: null,
+    usernameError: null,
+    emailError: null,
+    passwordError: null
 }
 
 export const userSlice = createSlice({
@@ -50,9 +53,15 @@ export const userSlice = createSlice({
     updateSuccess: (state, action) => {
         state.isLoading = false
         state.userData = action.payload
+        state.usernameError = null
+        state.emailError = null
+        state.passwordError = null
     },
     updateFail: (state, action) => {
         state.isLoading = false
+        state.usernameError = action.payload.username
+        state.emailError = action.payload.email
+        state.passwordError = action.payload.password
     },
   },
 })
