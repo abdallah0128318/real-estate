@@ -22,6 +22,7 @@ export const updateUserValidationRules = [
 
 //  here is function to update a user
 export const update = async (req, res) => {
+    if(req.user.id !== req.params.id) return res.status(401).json('You can only update your account')
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -54,6 +55,7 @@ export const update = async (req, res) => {
 
 // here is function to delete a user
 export const  destroy = async (req, res) => {
+    if(req.user.id !== req.params.id) return res.status(401).json('You can only delete your account')
     const userId = req.params.id
     await User.findByIdAndDelete(userId)
     res.clearCookie('access_token')

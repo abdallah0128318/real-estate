@@ -5,6 +5,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.route.js'
 import authRouter from './routes/auth.route.js'
+import listingRouter from './routes/listing.route.js'
 // create an express app
 const app = express()
 // use cors to allow 'cross origin request sharing'
@@ -28,6 +29,7 @@ mongoose.connect(process.env.MONGO_CONN_STR, {dbName: "real-estate1"}).then(data
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
+app.use('/api/listing', listingRouter)
 
 
 
