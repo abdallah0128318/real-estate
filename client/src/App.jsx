@@ -7,6 +7,7 @@ import About from './components/About'
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Header from './widgets/Header'
+import CreateListing from './components/CreateListing'
 import PrivateRoute from './components/PrivateRoute'
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         {/* here are all the protected routes that requires user authentication */}
         <Route  element={<PrivateRoute/>} >
           <Route path='/profile'  element={<Profile/>} />
+          <Route path='/add-listing'  element={<CreateListing/>} />
         </Route>
         
       </Routes>

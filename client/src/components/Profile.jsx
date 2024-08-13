@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { deleteFail, deleteSuccess, signOutFail, 
           signOutSuccess, imageUploadSuccess, beforeUpdate, updateFail, updateSuccess} from '../state_slices/userSlice';
 import { useEffect, useRef, useState } from 'react';
@@ -188,7 +189,16 @@ export default function Profile() {
       >
         {isLoading ? 'Updating...': 'Update'}
       </button>
+
+      <Link to={"/add-listing"} 
+      className='bg-green-500 rounded-lg p-3 mt-1 text-white uppercase text-center hover:opacity-80'>
+        Create a Listing
+      </Link>
+
     </form>
+
+
+
 
     <div className='flex justify-between mt-5'>
       <span
