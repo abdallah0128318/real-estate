@@ -2,10 +2,10 @@ import React from 'react'
 
 const CreateListing = () => {
   return (
-    <main>
+    <main className='mx-auto mt-6 sm:w-3/4'>
       <h1 className='font-bold text-3xl text-center my-4'>Create a Listing</h1>
       {/* here is the main div that has two divs left and right */}
-      <form className="flex flex-col p-6 sm:flex-row sm:gap-5">
+      <form className="flex flex-col p-6 md:flex-row sm:gap-5">
 
         {/* here is the left div or the left section */}
         <div className="flex-1">
@@ -114,15 +114,25 @@ const CreateListing = () => {
 
 
         {/* here is the right div or the right section */}
-        <div className="border border-blue-800 flex-1">
-          <div>
-            <p>hello the right div</p>
+        <div className="flex-1">
+
+          <div className='mt-5'>
+              <span className='font-semibold'>images:</span>
+              <span className='text-gray-600'> The first image will be the cover (max 6)</span>
           </div>
+
+          <div className='flex gap-3 mt-4'>
+            <div className='border border-gray-500 p-3 w-full rounded'>
+              <input type="file" name="images" id="images" className='w-full rounded' multiple />
+            </div>
+            <button type='button' className='uppercase text-green-700 border border-green-500 p-3 rounded'>Upload</button>
+          </div>
+
+
+          <button type="submit" className='uppercase rounded-lg bg-slate-900 hover:opacity-80 text-white w-full mt-3 p-3'>Creare Listing</button>
+
         </div>
-
       </form>
-
-
     </main>
   )
 }
