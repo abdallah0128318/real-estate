@@ -39,11 +39,53 @@ This comprehensive real estate application is built using the MERN (MongoDB, Exp
 
 ## Getting Started
 
-(Include instructions on how to set up and run the project locally)
+### Installation and Setup
 
-## Contributing
+To get started with this project, follow these steps:
 
-(Add guidelines for contributing to the project)
+1. **Clone the Repository**
+   Open your terminal and run the following command:
+   ```
+   git clone https://github.com/username/real-estate-mern-app.git
+   ```
+   Replace `username` with the actual GitHub username or organization name where the repository is hosted.
+
+2. **Navigate to the Project Directory**
+   ```
+   cd real-estate-mern-app
+   ```
+
+3. **Install Dependencies**
+   - For the backend:
+     ```
+     npm install
+     ```
+   - For the frontend:
+     ```
+     cd client
+     npm install
+     ```
+
+4. **Set Up Environment Variables**
+   Create a `.env` file in the root directory and add necessary environment variables (e.g., MongoDB URI, JWT secret, etc.).
+
+5. **Run the Application**
+   - To start the backend server:
+     ```
+     npm run dev
+     ```
+   - To start the frontend (in a new terminal window):
+     ```
+     cd client
+     npm run dev
+     ```
+
+6. **Access the Application**
+   Open your browser and visit `http://localhost:5173` to view the application.
+
+Make sure you have Node.js and npm (Node Package Manager) installed on your system before starting the setup process.
+
+
 
 ## License
 
