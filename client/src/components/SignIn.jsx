@@ -9,8 +9,7 @@ export default function SignIn() {
   const isLoading = useSelector(state => state.user.isLoading);
   const errorMsg = useSelector(state => state.user.errorMsg);
   const dispatch = useDispatch();
-  // const [errorMsg, setErrorMsg] = useState(null);
-  // const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   // a function to pick data up from form fields then assign it in 'formData' object
   const handleChange = (e)=>{
@@ -32,11 +31,14 @@ export default function SignIn() {
     })
     if(res.status == 200){
       const data = await res.json();
+      console.log(data)
       dispatch(signinSuccess(data))
+      dispatch(signinFail(null))
       navigate('/')
     }
     else if(res.status == 401){
       const errorObj = await res.json();  
+      console.log(errorObj);
       dispatch(signinFail(errorObj.msg))
       return 0;
     }
@@ -58,7 +60,7 @@ export default function SignIn() {
           type="password" name="password" id="password" placeholder='password' onChange={handleChange}/>
 
           <button className='block w-full p-2 my-3 hover:opacity-70 disabled:opacity-70
-          rounded-lg bg-indigo-950 text-white' disabled={isLoading} > {isLoading ? 'Loading' : 'Login'} </button>
+          rounded-lg bg-indigo-950 text-white' /*disabled={isLoading}*/ > {isLoading ? 'Loading' : 'Login'} </button>
           <OAuth/>
       </form>
 
